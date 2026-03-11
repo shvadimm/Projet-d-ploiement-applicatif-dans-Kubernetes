@@ -1,26 +1,78 @@
 {% extends "base.html" %}
 {% block title %}Mes tâches - Todo List{% endblock %}
 {% block content %}
-<h1>Mes tâches</h1>
-<form method="POST" action="{{ url_for('todos.add') }}" class="add-form">
-    <input type="text" name="title" placeholder="Nouvelle tâche..." required>
-    <button type="submit">Ajouter</button>
+<h1 class="reveal">Mes tâches</h1>
+
+<form method="POST" action="{{ url_for('todos.add') }}" class="add-form todo-form-card reveal">
+    <div class="form-row">
+        <input type="text" name="title" placeholder="Nouvelle tâche..." required class="flex-grow">
+        <select name="priority" title="Priorité">
+            <option value="medium">Moyenne</option>
+            <option value="low">Basse</option>
+            <option value="high">Haute</option>
+            <option value="urgent">Urgente</option>
+        </select>
+        <input type="date" name="due_date" title="Date d'échéance">
+    </div>
+    <div class="form-row">
+        <textarea name="description" rows="2" placeholder="Description (optionnel)..." class="flex-grow"></textarea>
+        <button type="submit" class="btn-add">+ Ajouter</button>
+    </div>
 </form>
-{% if todos %}
-{% for todo in todos %}
-<div class="todo-item {% if todo.completed %}completed{% endif %}">
-    <span class="todo-title">{{ todo.title }}</span>
-    <div class="todo-actions">
-        <form method="POST" action="{{ url_for('todos.toggle', todo_id=todo.id) }}" style="display: inline;">
-            <button type="submit">{{ 'Annuler' if todo.completed else 'Terminer' }}</button>
-        </form>
-        <form method="POST" action="{{ url_for('todos.delete', todo_id=todo.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer cette tâche ?');">
-            <button type="submit" class="btn-danger">Supprimer</button>
-        </form>
+
+<div class="toolbar reveal">
+    <div class="filters">
+        <a href="{{ url_for('todos.index', filter='all') }}" class="filter-btn {% if filter_type == 'all' %}active{% endif %}">Toutes</a>
+        <a href="{{ url_for('todos.index', filter='active') }}" class="filter-btn {% if filter_type == 'active' %}active{% endif %}">Actives</a>
+        <a href="{{ url_for('todos.index', filter='completed') }}" class="filter-btn {% if filter_type == 'completed' %}active{% endif %}">Terminées</a>
+    </div>
+    <div class="sort-controls">
+        <span>Trier par :</span>
+        <select onchange="location.href=this.value" class="sort-select">
+            <option value="{{ url_for('todos.index', filter=filter_type, sort='created_at', order='desc') }}" {% if sort_by == 'created_at' and sort_order == 'desc' %}selected{% endif %}>Date (récent)</option>
+            <option value="{{ url_for('todos.index', filter=filter_type, sort='created_at', order='asc') }}" {% if sort_by == 'created_at' and sort_order == 'asc' %}selected{% endif %}>Date (ancien)</option>
+            <option value="{{ url_for('todos.index', filter=filter_type, sort='due_date', order='asc') }}" {% if sort_by == 'due_date' and sort_order == 'asc' %}selected{% endif %}>Échéance (proche)</option>
+            <option value="{{ url_for('todos.index', filter=filter_type, sort='priority', order='desc') }}" {% if sort_by == 'priority' and sort_order == 'desc' %}selected{% endif %}>Priorité (haute→basse)</option>
+            <option value="{{ url_for('todos.index', filter=filter_type, sort='title', order='asc') }}" {% if sort_by == 'title' and sort_order == 'asc' %}selected{% endif %}>Titre A-Z</option>
+        </select>
     </div>
 </div>
+
+{% if todos %}
+<ul class="todo-list">
+{% for todo in todos %}
+<li class="todo-item reveal reveal-stagger {% if todo.completed %}completed{% endif %} {% if todo.is_overdue() %}overdue{% endif %} priority-{{ todo.priority or 'medium' }}" style="--i: {{ loop.index0 }}">
+    <form method="POST" action="{{ url_for('todos.toggle', todo_id=todo.id) }}" class="todo-check">
+        <button type="submit" class="check-btn" title="{{ 'Annuler' if todo.completed else 'Terminer' }}">
+            {% if todo.completed %}✓{% else %}○{% endif %}
+        </button>
+    </form>
+    <div class="todo-content">
+        <span class="todo-title">{{ todo.title }}</span>
+        {% if todo.description %}
+        <p class="todo-description">{{ todo.description }}</p>
+        {% endif %}
+        <div class="todo-meta">
+            <span class="priority-badge priority-{{ todo.priority or 'medium' }}">{{ {'low':'Basse','medium':'Moyenne','high':'Haute','urgent':'Urgent'}[todo.priority or 'medium'] }}</span>
+            {% if todo.due_date %}
+            <span class="due-date {% if todo.is_overdue() %}overdue{% endif %}">📅{{ todo.due_date.strftime('%d/%m/%Y') }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="todo-actions">
+        <a href="{{ url_for('todos.edit', todo_id=todo.id) }}" class="btn btn-sm btn-secondary" title="Modifier">✎</a>
+        <form method="POST" action="{{ url_for('todos.delete', todo_id=todo.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer cette tâche ?');">
+            <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">✕</button>
+        </form>
+    </div>
+</li>
 {% endfor %}
+</ul>
 {% else %}
-<p style="color: #94a3b8;">Aucune tâche. Ajoutez-en une ci-dessus.</p>
+<p class="empty-state">
+    {% if filter_type == 'all' %}Aucune tâche. Ajoutez-en une ci-dessus.{% endif %}
+    {% if filter_type == 'active' %}Aucune tâche active.{% endif %}
+    {% if filter_type == 'completed' %}Aucune tâche terminée.{% endif %}
+</p>
 {% endif %}
 {% endblock %}

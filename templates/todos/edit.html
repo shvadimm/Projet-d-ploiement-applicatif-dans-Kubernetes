@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Modifier la tâche - Todo List{% endblock %}
+{% block content %}
+<h1 class="reveal">Modifier la tâche</h1>
+<form method="POST" action="{{ url_for('todos.edit', todo_id=todo.id) }}" class="todo-form reveal">
+    <div class="form-group">
+        <label for="title">Titre *</label>
+        <input type="text" id="title" name="title" value="{{ todo.title }}" required>
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="3" placeholder="Détails optionnels...">{{ todo.description or '' }}</textarea>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="priority">Priorité</label>
+            <select id="priority" name="priority">
+                <option value="low" {% if (todo.priority or 'medium') == 'low' %}selected{% endif %}>Bas</option>
+                <option value="medium" {% if (todo.priority or 'medium') == 'medium' %}selected{% endif %}>Moyenne</option>
+                <option value="high" {% if (todo.priority or 'medium') == 'high' %}selected{% endif %}>Haute</option>
+                <option value="urgent" {% if (todo.priority or 'medium') == 'urgent' %}selected{% endif %}>Urgente</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="due_date">Date d'échéance</label>
+            <input type="date" id="due_date" name="due_date" value="{{ todo.due_date.strftime('%Y-%m-%d') if todo.due_date else '' }}">
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit">Enregistrer</button>
+        <a href="{{ url_for('todos.index') }}" class="btn btn-secondary">Annuler</a>
+    </div>
+</form>
+{% endblock %}
