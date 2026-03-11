@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Todo List{% endblock %}
+{% block content %}
+<h1>Bienvenue sur Todo List</h1>
+<p style="margin-bottom: 1.5rem; color: #94a3b8;">Organisez vos tâches simplement. Inscrivez-vous ou connectez-vous pour commencer.</p>
+<a href="{{ url_for('auth.login') }}" class="btn">Se connecter</a>
+<a href="{{ url_for('auth.register') }}" class="btn btn-secondary" style="margin-left: 0.5rem;">S'inscrire</a>
+{% endblock %}
