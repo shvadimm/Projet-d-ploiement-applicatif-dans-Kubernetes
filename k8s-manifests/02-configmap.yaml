@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todos-config
+  namespace: todos
+  labels:
+    app: todos-app
+data:
+  # Database configuration
+  DATABASE_HOST: mariadb-galera
+  DATABASE_PORT: "3306"
+  DATABASE_NAME: tododb
+  DATABASE_USER: todouser
+  # Application configuration
+  FLASK_ENV: production
+  LOG_LEVEL: INFO
