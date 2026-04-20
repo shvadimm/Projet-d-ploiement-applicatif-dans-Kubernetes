@@ -16,6 +16,12 @@ kubectl apply -f 01-secret.yaml
 echo "⚙️  Creating ConfigMap..."
 kubectl apply -f 02-configmap.yaml
 
+echo "🗄️  Creating MariaDB Galera cluster..."
+kubectl apply -f 06-mariadb-galera.yaml
+
+echo "⏳ Waiting for MariaDB Galera to be ready..."
+kubectl rollout status statefulset/mariadb-galera -n todos --timeout=300s
+
 echo "📋 Creating deployment..."
 kubectl apply -f 03-deployment.yaml
 

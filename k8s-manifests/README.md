@@ -12,6 +12,7 @@ Complete Kubernetes deployment for the TODO application with replication, auto-s
 | `03-deployment.yaml` | Main application deployment (3 replicas with rolling updates) |
 | `04-service.yaml` | LoadBalancer service to expose the application |
 | `05-hpa.yaml` | HorizontalPodAutoscaler for automatic scaling |
+| `06-mariadb-galera.yaml` | MariaDB Galera cluster (3 replicas, StatefulSet + PVC) |
 
 ## Deployment Architecture
 
@@ -59,6 +60,8 @@ chmod +x deploy.sh
 kubectl apply -f 00-namespace.yaml
 kubectl apply -f 01-secret.yaml
 kubectl apply -f 02-configmap.yaml
+kubectl apply -f 06-mariadb-galera.yaml
+kubectl rollout status statefulset/mariadb-galera -n todos
 kubectl apply -f 03-deployment.yaml
 kubectl apply -f 04-service.yaml
 kubectl apply -f 05-hpa.yaml
@@ -70,6 +73,9 @@ kubectl apply -f 05-hpa.yaml
 ```bash
 # All resources
 kubectl get all -n todos
+
+# Galera pods
+kubectl get pods -n todos -l app=mariadb-galera
 
 # Pods only
 kubectl get pods -n todos -o wide
@@ -157,7 +163,7 @@ The app connects to MariaDB Galera at:
 mysql+pymysql://todouser:todopass@mariadb-galera:3306/tododb
 ```
 
-MariaDB is in the `default` namespace, so the connection uses the DNS name `mariadb-galera` (Kubernetes DNS resolves cross-namespace).
+MariaDB Galera is deployed in the `todos` namespace, so the app uses the DNS name `mariadb-galera`.
 
 ## Cleanup
 
