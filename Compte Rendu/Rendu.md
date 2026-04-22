@@ -52,7 +52,7 @@ helm install traefik traefik/traefik
 kubectl apply -f 04-service.yaml
 
 # create the ingress
-kubectl apply -f ingress/ingress.yml
+kubectl apply -f ingress/ingress.yaml
 
 
 # port forward (les deux commandes font pareil)
@@ -61,3 +61,19 @@ kubectl port-forward svc/traefik 8000:80
 ou
 
 kubectl port-forward deployment/traefik 8000:8000
+
+
+------
+
+# Déploiement continu avec Flagger
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm install prometheus prometheus-community/prometheus -n monitoring --create-namespace
+
+kubectl create namespace traefik
+
+helm repo add flagger https://flagger.app
+helm install flagger flagger/flagger \
+  --namespace traefik \
+  --set prometheus.url=http://prometheus-server.monitoring.svc.cluster.local \
+  --set meshProvider=traefik
+
