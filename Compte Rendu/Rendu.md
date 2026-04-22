@@ -61,3 +61,19 @@ kubectl port-forward svc/traefik 8000:80
 ou
 
 kubectl port-forward deployment/traefik 8000:8000
+
+
+
+# Certificate TLS
+
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --set crds.enabled=true
+
+https://cert-manager.io/docs/installation/kubectl/
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.20.2/cert-manager.yaml
+
+kubectl apply -f letsencrypt-staging.yaml
+
+kubectl port-forward svc/traefik 8000:443

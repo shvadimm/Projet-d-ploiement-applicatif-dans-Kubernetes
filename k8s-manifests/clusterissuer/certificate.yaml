@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: localhost-cert
+  namespace: todos
+spec:
+  dnsNames:
+    - localhost
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+  secretName: localhost-tls-cert 
