@@ -1,0 +1,16 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: gateway-ingressroute
+  namespace: todos
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`localhost`) && PathPrefix(`/app`)
+    kind: Rule
+    services:
+    - name: todos-app
+      port: 8080
+    

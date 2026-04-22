@@ -39,13 +39,12 @@ spec:
 
       containers:
         - name: todos-app
-          image: ghcr.io/shvadimm/projet-d-ploiement-applicatif-dans-kubernetes:sha-40cbaa7
+          image: ghcr.io/shvadimm/projet-d-ploiement-applicatif-dans-kubernetes:sha-10f0130
           imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
-          
           env:
             # From ConfigMap
             - name: DATABASE_HOST

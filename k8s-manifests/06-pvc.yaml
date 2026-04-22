@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: todos-app-pvc
+  namespace: todos
+spec:
+  accessModes:
+    - ReadWriteOnce

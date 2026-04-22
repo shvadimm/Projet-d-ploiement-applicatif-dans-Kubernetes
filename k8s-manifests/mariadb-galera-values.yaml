@@ -1,0 +1,68 @@
+# helm install my-release oci://registry-1.docker.io/bitnamicharts/mariadb-galera \
+#   --namespace todos \
+#   --create-namespace \
+#   -f mariadb-galera-values.yaml
+
+## Replication
+replicaCount: 3
+
+## Database credentials (CORRECTED MAPPING)
+rootUser:
+  password: "rootpass"
+db:
+  name: "tododb"
+  user: "todouser"
+  password: "todopass"
+
+## Galera cluster configuration
+galera:
+  enabled: true
+  mariabackup:
+    password: "syncpass123" # Added this for cluster stability
+  bootstrap:
+    enabled: true
+    forceSafeBootstrap: true
+  tlsEnabled: false
+
+image:
+  registry: docker.io
+  repository: bitnamilegacy/mariadb-galera  
+  tag: 12.0.2-debian-12-r0
+
+## Persistence
+persistence:
+  enabled: true
+  storageClass: "mariadb-storage" 
+  accessMode: ReadWriteOnce
+  size: 5Gi
+
+## Service configuration
+service:
+  type: ClusterIP
+  port: 3306
+
+## Resources
+resources:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+## Health checks
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 120
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 120
+
+## Node affinity
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: mariadb-galera
+        topologyKey: "kubernetes.io/hostname"
