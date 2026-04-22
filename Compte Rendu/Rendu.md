@@ -24,13 +24,40 @@ helm install traefik traefik/traefik
 ```
 
 
-### Installation des StorageClass
+# START HERE
 
-```
--- Prérequis : Installation du driver CSI pour NFS -- 
-helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
-helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace nfs --create-namespace --version v4.10.0
+# Create cluster
+kind create cluster --config cluster-config.yml
 
-kubectl apply -f storage-class-nfs.yml
 
-```
+# Create namespace, secrets & configmap
+kubectl apply -f 00-namespace.yaml
+kubectl apply -f 01-secret.yaml
+kubectl apply -f 02-configmap.yaml
+
+# mariadb-galera
+## create a storageclass for the mariadb-galera
+kubectl apply -f storageclass-mariadb.yaml
+
+## create the mariadb-galera with helm
+helm install my-release oci://registry-1.docker.io/bitnamicharts/mariadb-galera --namespace todos --create-namespace  -f mariadb-galera-values.yaml
+
+# deploy the app
+kubectl apply -f 03-deployment.yaml
+
+# install traefik
+helm install traefik traefik/traefik
+
+## create clusterip for the ingress route
+kubectl apply -f 04-service.yaml
+
+# create the ingress
+kubectl apply -f ingress/ingress.yml
+
+
+# port forward (les deux commandes font pareil)
+kubectl port-forward svc/traefik 8000:80
+
+ou
+
+kubectl port-forward deployment/traefik 8000:8000
