@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todos-config
+  namespace: todos
+  labels:
+    app: todos-app
+data:
+  # Database configuration
+  DATABASE_HOST: my-release-mariadb-galera
+  DATABASE_PORT: "3306"
+  DATABASE_NAME: tododb
+  DATABASE_USER: todouser
+  MYSQL_ROOT_PASSWORD: rootpass
+  MYSQL_DATABASE: tododb
+  MYSQL_USER: todouser
+  MYSQL_PASSWORD: todopass
+  # Application configuration
+  FLASK_ENV: production
+  LOG_LEVEL: INFO

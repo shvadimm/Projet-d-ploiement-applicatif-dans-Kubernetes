@@ -1,0 +1,20 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: gateway-ingressroute
+  namespace: todos
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`localhost`) 
+    kind: Rule
+    services:
+    - name: todos-app-service 
+      port: 80            
+      weight: 90
+    - name: todos-app-service-version-b
+      port: 80      
+      weight: 10
+  tls:
+    certResolver: localhost-tls-cert
