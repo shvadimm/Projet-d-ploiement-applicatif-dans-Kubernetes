@@ -22,7 +22,7 @@ spec:
         app: todos-app
         version: v1
       annotations:
-        prometheus.io/scrape: "false"
+        prometheus.io/scrape: "true"
     spec:
       affinity:
         podAntiAffinity:

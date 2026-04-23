@@ -22,7 +22,7 @@ spec:
         app: todos-app
         version: v2
       annotations:
-        prometheus.io/scrape: "false"
+        prometheus.io/scrape: "true"
     spec:
       affinity:
         podAntiAffinity:
@@ -39,7 +39,7 @@ spec:
 
       containers:
         - name: todos-app
-          image: ghcr.io/shvadimm/projet-d-ploiement-applicatif-dans-kubernetes:sha-40cbaa7
+          image: ghcr.io/shvadimm/projet-d-ploiement-applicatif-dans-kubernetes:sha-2cb8801
           imagePullPolicy: Always
           ports:
             - name: http
